@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- ★Cinzelから Cormorant Garamond / Playfair Display に変更 -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ラルクソート</title>
+  <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gen-jyuu-gothic-webfont@1.0.0/GenJyuuGothic-Bold.css">
+  <meta name="theme-color" content="#0b0e14">
+</head>
+<body>
+  <div class="container">
+    <h1>ラルクソート</h1>
+    
+    <!-- 1. 対戦エリア（最初はこれだけを表示） -->
+    <div id="battle-area">
+      <p id="progress">直感で選んでください</p>
+      
+      <div class="button-group">
+        <!-- 左の曲 -->
+        <div class="song-card">
+          <button id="btn-left" onclick="selectChoice(-1)">---</button>
+          <div class="links">
+            <a id="link-left-lyric" href="#" target="_blank" rel="noopener">🔍 歌詞</a>
+            <a id="link-left-yt" href="#" target="_blank" rel="noopener">▶ YouTube</a>
+          </div>
+        </div>
+
+        <!-- 右の曲 -->
+        <div class="song-card">
+          <button id="btn-right" onclick="selectChoice(1)">---</button>
+          <div class="links">
+            <a id="link-right-lyric" href="#" target="_blank" rel="noopener">🔍 歌詞</a>
+            <a id="link-right-yt" href="#" target="_blank" rel="noopener">▶ YouTube</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-buttons">
+        <button onclick="selectChoice(0)" class="btn-draw">🤝 引き分け（甲乙つけがたい）</button>
+        <button onclick="selectChoice(2)" class="btn-unknown">❓ どちらも知らない</button>
+      </div>
+    </div>
+
+    <!-- 2. 結果エリア（style="display: none;" で最初は隠しておく） -->
+    <div id="result-area" style="display: none;">
+      <h2>ランキング結果</h2>
+      
+      <button id="btn-copy" onclick="copyResult()">📋 結果をコピーする</button>
+      <p id="copy-msg" style="color: #00d2ff; font-size: 0.85rem; display: none; margin-top: 5px;">クリップボードにコピーしました！</p>
+
+      <ol id="result-list"></ol>
+      
+      <button onclick="location.reload()" style="margin-top: 20px; border-color: #666;">もう一度やり直す</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
+</body>
+</html>

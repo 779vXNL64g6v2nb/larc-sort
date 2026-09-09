@@ -1,0 +1,179 @@
+/* 空色 ➔ 14色の極細グラデーション ➔ 空色 へ滑らかに流れるアニメーション */
+@keyframes skyToSmoothRainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body {
+  /* 両端の明るい空色（#70d6ff）の間に、14色の細やかな虹色を配置 */
+  background: linear-gradient(
+    135deg, 
+    #70d6ff, /* 両サイド：明るい空色 */
+    #e63946, /* 1. 赤 */
+    #f45b31, /* 1.5 朱色 */
+    #f77f00, /* 2. 橙 */
+    #faa307, /* 2.5 山吹色 */
+    #ffd166, /* 3. 黄 */
+    #8ac926, /* 3.5 黄緑 */
+    #06d6a0, /* 4. 緑 */
+    #00b4d8, /* 4.5 シアン */
+    #118ab2, /* 5. 青 */
+    #185ea5, /* 5.5 濃青 */
+    #1d3557, /* 6. 藍 */
+    #4a154b, /* 6.5 紫紺 */
+    #7209b7, /* 7. 紫 */
+    #b5179e, /* 7.5 赤紫 */
+    #70d6ff  /* 両サイド：明るい空色 */
+  );
+  background-size: 400% 400%; /* グラデーションの幅を広げてより滑らかに */
+  animation: skyToSmoothRainbow 20s ease infinite; /* 20秒かけてゆったり変化 */
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+  min-height: 100vh;
+}
+/* タイトル：爽やかな空の雲をイメージした白影 */
+/* タイトルのフォントとデザインをオフィシャル風に変更 */
+/* タイトルのフォントとデザイン修正 */
+/* タイトルのフォントとデザイン更新 */
+h1 {
+  font-family: 'GenJyuuGothic-Bold', '源柔ゴシック', 'Hiragino Maru Gothic ProN', 'メイリオ', sans-serif;
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-shadow: 
+    0 3px 12px rgba(0, 0, 0, 0.6),
+    0 0 15px rgba(112, 214, 255, 0.5); /* ほんのり空色のオーラ */
+  margin-bottom: 20px;
+}
+/* 進捗表示テキスト */
+#progress {
+  color: #e0e6ed;
+  font-size: 1rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  margin-bottom: 15px;
+}
+
+/* 2択のカード枠 */
+.song-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 2択のメイン曲ボタン（夜空のような深い紺で文字を際立たせる） */
+.button-group button {
+  background: rgba(13, 22, 38, 0.85);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  padding: 22px 15px;
+  font-size: 1.15rem;
+  font-weight: bold;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ボタンホバー時 */
+.button-group button:hover, 
+.button-group button:active {
+  background: rgba(8, 15, 28, 0.95);
+  border-color: #a8dadc;
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px rgba(168, 218, 220, 0.4);
+}
+
+/* 検索リンク（歌詞・YouTube） */
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.links a {
+  color: #f1faee;
+  font-size: 0.82rem;
+  font-weight: bold;
+  text-decoration: none;
+  background: rgba(13, 22, 38, 0.7);
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.links a:hover {
+  background: #a8dadc;
+  color: #1d3557;
+}
+
+/* 下部のサブボタンエリア */
+.sub-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.sub-buttons button {
+  flex: 1;
+  padding: 13px 8px;
+  font-size: 0.88rem;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  background-image: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* 引き分けボタン（空に合う澄んだシアン） */
+.btn-draw {
+  border: 1.5px solid #a8dadc !important;
+  background-color: rgba(13, 35, 55, 0.85) !important;
+  color: #a8dadc !important;
+}
+
+/* 知らないボタン（夕暮れのようなコーラルピンク） */
+.btn-unknown {
+  border: 1.5px solid #e63946 !important;
+  background-color: rgba(45, 15, 25, 0.85) !important;
+  color: #ff8a93 !important;
+}
+
+/* 結果画面のコピーボタン */
+#btn-copy {
+  background: linear-gradient(135deg, #a8dadc, #457b9d);
+  color: #1d3557;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 14px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* 順位結果のリスト枠 */
+ol {
+  text-align: left;
+  background: rgba(13, 22, 38, 0.9);
+  padding: 20px 20px 20px 45px;
+  border-radius: 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  max-height: 500px;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+li {
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #f1faee;
+}
