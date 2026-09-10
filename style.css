@@ -177,3 +177,7 @@ li {
   font-size: 1rem;
   color: #f1faee;
 }
+/* 文字の背景色を透明にする修正 */
+.sub-buttons button {
+  background-image: none !important;
+}

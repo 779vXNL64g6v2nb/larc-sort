@@ -17,7 +17,7 @@ const songs = [
   "\"good-morning Hide\"", "I Wish", "Dearest Love", "LORELEY", "Singin' in the Rain",
   "Shout at the Devil", "birth", "Promised land", "fate", "milky way", "あなた",
   "Cradle", "Larva", "Butterfly's Sleep", "Perfect Blue", "真実と幻想と", "What is love",
-  "死の灰", "It's the end", "Sell my Soul", "L'heure", "trick", "いばらの涙",
+  "死の灰", "It's the end", "Sell My Soul", "L'heure", "trick", "いばらの涙",
   "the silver shining", "get out from the shell -asian version-", "THE NEPENTHES",
   "bravery", "ROUTE 666", "TIME SLIP", "a silent letter", "ALL YEAR AROUND FALLING IN LOVE",
   "接吻", "Lover Boy", "Feeling Fine", "Time goes on", "Coming Closer", "永遠",
@@ -29,41 +29,109 @@ const songs = [
   "a swell in the sun", "hole"
 ];
 
-let songList = [...songs];
-let n = songList.length;
-let cmp1, cmp2;
+// --- ソート用状態変数 ---
+let lst = [];
+let mergedLst = [];
+let curList1 = [];
+let curList2 = [];
+let rec = [];
+let head1 = 0;
+let head2 = 1;
+let cmp1 = 0;
+let cmp2 = 0;
 let sortedCount = 0;
-// ★最大対戦回数を 300 回に設定！（お好みで 200 や 500 に変更可能）
-const MAX_ROUNDS = 300; 
-let scoreMap = {};
+let resultRank = [];
 
 function init() {
-  songs.forEach((_, idx) => scoreMap[idx] = 0);
-  showChoice();
+  const savedState = localStorage.getItem("larc_sort_state");
+  if (savedState) {
+    try {
+      const state = JSON.parse(savedState);
+      lst = state.lst;
+      mergedLst = state.mergedLst;
+      curList1 = state.curList1;
+      curList2 = state.curList2;
+      rec = state.rec;
+      head1 = state.head1;
+      head2 = state.head2;
+      cmp1 = state.cmp1;
+      cmp2 = state.cmp2;
+      sortedCount = state.sortedCount;
+
+      if (state.isFinished) {
+        resultRank = state.resultRank;
+        showResult();
+        return;
+      } else {
+        showChoice();
+        return;
+      }
+    } catch (e) {
+      console.error("復元エラーのため初期化", e);
+    }
+  }
+
+  // 新規初期化
+  lst = songs.map((_, idx) => [idx]);
+  mergedLst = [];
+  head1 = 0;
+  head2 = 1;
+  sortedCount = 0;
+  
+  setupNextMerge();
 }
 
-function showChoice() {
-  // 指定の対戦回数を超えたら結果画面へ
-  if (sortedCount >= MAX_ROUNDS) {
+function setupNextMerge() {
+  if (lst.length <= 1) {
+    resultRank = lst[0] || [];
+    saveState(true);
     showResult();
     return;
   }
 
-  // 残り・現在の対戦回数を画面に表示
-  const progressElem = document.getElementById("progress");
-  if (progressElem) {
-    progressElem.innerText = `対戦中: ${sortedCount + 1} / ${MAX_ROUNDS} 回`;
+  if (head2 >= lst.length) {
+    if (head1 < lst.length) {
+      mergedLst.push(lst[head1]);
+    }
+    lst = mergedLst;
+    mergedLst = [];
+    head1 = 0;
+    head2 = 1;
+    if (lst.length <= 1) {
+      resultRank = lst[0] || [];
+      saveState(true);
+      showResult();
+      return;
+    }
   }
 
-  // ランダムに2曲選ぶ
-  cmp1 = Math.floor(Math.random() * n);
-  cmp2 = Math.floor(Math.random() * n);
-  while (cmp1 === cmp2) {
-    cmp2 = Math.floor(Math.random() * n);
-  }
+  curList1 = [...lst[head1]];
+  curList2 = [...lst[head2]];
+  rec = [];
 
-  const songLeft = songList[cmp1];
-  const songRight = songList[cmp2];
+  cmp1 = curList1[0];
+  cmp2 = curList2[0];
+
+  saveState(false);
+  showChoice();
+}
+
+function saveState(isFinished = false) {
+  const state = {
+    lst, mergedLst, curList1, curList2, rec, head1, head2,
+    cmp1, cmp2, sortedCount, isFinished, resultRank
+  };
+  localStorage.setItem("larc_sort_state", JSON.stringify(state));
+}
+
+function resetState() {
+  localStorage.removeItem("larc_sort_state");
+  location.reload();
+}
+
+function showChoice() {
+  const songLeft = songs[cmp1];
+  const songRight = songs[cmp2];
 
   const btnLeft = document.getElementById("btn-left");
   const btnRight = document.getElementById("btn-right");
@@ -73,7 +141,11 @@ function showChoice() {
     btnRight.innerText = songRight;
   }
 
-  // 検索リンクを更新
+  const progressElem = document.getElementById("progress");
+  if (progressElem) {
+    progressElem.innerText = `対戦回数: ${sortedCount + 1} 回（順位確定まで進行中）`;
+  }
+
   const leftQuery = encodeURIComponent(`ラルク ${songLeft}`);
   const rightQuery = encodeURIComponent(`ラルク ${songRight}`);
 
@@ -89,51 +161,52 @@ function showChoice() {
 }
 
 function selectChoice(val) {
-  if (val === -1) {
-    scoreMap[cmp1] += 2;
-  } else if (val === 1) {
-    scoreMap[cmp2] += 2;
-  } else if (val === 0) {
-    scoreMap[cmp1] += 1;
-    scoreMap[cmp2] += 1;
-  } else if (val === 2) {
-    scoreMap[cmp1] -= 1;
-    scoreMap[cmp2] -= 1;
-  }
-  
   sortedCount++;
-  showChoice();
+
+  if (val === -1 || val === 0) {
+    // 左勝ち（または引き分け）
+    rec.push(curList1.shift());
+  } else {
+    // 右勝ち（または知らない）
+    rec.push(curList2.shift());
+  }
+
+  if (curList1.length > 0 && curList2.length > 0) {
+    cmp1 = curList1[0];
+    cmp2 = curList2[0];
+    saveState(false);
+    showChoice();
+  } else {
+    // 片方のグループが空になったら残りを全て追加
+    while (curList1.length > 0) rec.push(curList1.shift());
+    while (curList2.length > 0) rec.push(curList2.shift());
+
+    mergedLst.push(rec);
+    head1 += 2;
+    head2 += 2;
+    setupNextMerge();
+  }
 }
 
 function showResult() {
   document.getElementById("battle-area").style.display = "none";
   document.getElementById("result-area").style.display = "block";
   
-  let sortedIndices = Object.keys(scoreMap).sort((a, b) => scoreMap[b] - scoreMap[a]);
   let resultList = document.getElementById("result-list");
   resultList.innerHTML = "";
   
-  // 画面上に全順位を表示
-  sortedIndices.forEach(idx => {
+  resultRank.forEach(idx => {
     let li = document.createElement("li");
-    li.innerText = songList[idx];
+    li.innerText = songs[idx];
     resultList.appendChild(li);
   });
 }
 
-// ★全順位（11位〜148位まで全て）をコピーする機能
 function copyResult() {
-  let sortedIndices = Object.keys(scoreMap).sort((a, b) => scoreMap[b] - scoreMap[a]);
-  
   let text = "【マイ ラルクソート 全楽曲順位】\n";
-  
-  // 1位から最後の曲まで全てループでテキスト化
-  for (let i = 0; i < sortedIndices.length; i++) {
-    let rank = i + 1;
-    let songName = songList[sortedIndices[i]];
-    text += `${rank}位: ${songName}\n`;
+  for (let i = 0; i < resultRank.length; i++) {
+    text += `${i + 1}位: ${songs[resultRank[i]]}\n`;
   }
-  
   text += "\n#ラルクソート";
 
   navigator.clipboard.writeText(text).then(() => {
@@ -143,7 +216,7 @@ function copyResult() {
       msg.style.display = "block";
       setTimeout(() => { msg.style.display = "none"; }, 3000);
     }
-  }).catch(err => {
+  }).catch(() => {
     alert("コピーに失敗しました");
   });
 }
